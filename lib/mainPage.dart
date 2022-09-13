@@ -1,14 +1,19 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 import 'package:intl/intl.dart' as intl;
 import 'package:flutter/material.dart';
+import 'package:manage/helpers.dart';
+
+import 'dialog.dart';
 
 class ProjectData {
-  String? projectName;
+  String projectName;
   List<String> timeCreated = [];
   List<String> allUpdates = [];
 
   ProjectData(
-      {this.projectName, required this.timeCreated, required this.allUpdates});
+      {required this.projectName,
+      required this.timeCreated,
+      required this.allUpdates});
 }
 
 class MainPage extends StatefulWidget {
@@ -19,7 +24,7 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
-  List<ProjectData> dummyData = [
+  List<ProjectData> projectsData = [
     ProjectData(
       projectName: "Pogo",
       allUpdates: [
@@ -53,17 +58,38 @@ class _MainPageState extends State<MainPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('הפרוייקטים שלי'),
+        leadingWidth: 100,
         leading: TextButton(
-          onPressed: () {},
-          child: const Text('פרוייטק חדש'),
+          style: ButtonStyle(
+              backgroundColor: MaterialStateProperty.all(Colors.white12)),
+          onPressed: () async {
+            var formatTime = intl.DateFormat("(dd/MM) HH:mm");
+            var nowTime = formatTime.format(DateTime.now());
+
+            var projName = await newProjDialog(context);
+            if (projName != null && projName.isNotEmpty) {
+              projectsData.add(
+                ProjectData(
+                  projectName: projName.toString(),
+                  allUpdates: ['הפרוייקט נוצר!'],
+                  timeCreated: [nowTime],
+                ),
+              );
+              setState(() {});
+            }
+          },
+          child: const Text(
+            'פרוייטק חדש',
+            style: TextStyle(color: Colors.white),
+          ),
         ),
       ),
       body: ListView.builder(
-        itemCount: dummyData.length,
+        itemCount: projectsData.length,
         itemBuilder: (context, i) {
-          print('dummyData ${dummyData[i].projectName}');
-          print('dummyData ${dummyData[i].allUpdates}');
-          print('dummyData ${dummyData[i].timeCreated}');
+          print('dummyData ${projectsData[i].projectName}');
+          print('dummyData ${projectsData[i].allUpdates}');
+          print('dummyData ${projectsData[i].timeCreated}');
 
           return Column(
             children: [
@@ -74,23 +100,42 @@ class _MainPageState extends State<MainPage> {
                     indent: 15,
                     endIndent: 15),
               Container(
-                  margin: const EdgeInsets.only(top: 10, bottom: 5, right: 10),
+                  margin: const EdgeInsets.only(
+                      top: 10, bottom: 5, right: 10, left: 10),
                   alignment: Alignment.centerRight,
-                  child:
-                  RichText(
-                    textDirection: TextDirection.ltr,
-                    text: TextSpan(
-                      children: <TextSpan> [
-                         TextSpan(text: dummyData[i].timeCreated[0], style: TextStyle(
-                             fontSize: 13 )),
-                        TextSpan(text: ' · ${dummyData[i].projectName}',
-                            style: TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.bold)),
-                      ],
-                    ),)
-
-              ),
+                  child: Row(
+                    children: [
+                      RichText(
+                        textDirection: TextDirection.ltr,
+                        text: TextSpan(
+                          children: <TextSpan>[
+                            TextSpan(
+                                text: projectsData[i].timeCreated[0],
+                                style: TextStyle(fontSize: 13)),
+                            TextSpan(
+                                text: ' · ${projectsData[i].projectName}',
+                                style: TextStyle(
+                                    fontSize: 13, fontWeight: FontWeight.bold)),
+                          ],
+                        ),
+                      ),
+                      Spacer(),
+                      InkWell(
+                          onTap: () async {
+                            bool shouldDelete = await ruSureDialog(
+                                    context, projectsData[i].projectName) ?? false;
+                            if (shouldDelete) {
+                              projectsData.remove(projectsData[i]);
+                              setState(() {});
+                            }
+                          },
+                          child: Icon(
+                            Icons.delete_forever,
+                            color: Colors.grey,
+                            size: 15,
+                          )),
+                    ],
+                  )),
               buildCard(i),
             ],
           );
@@ -109,28 +154,22 @@ class _MainPageState extends State<MainPage> {
         leading: InkWell(
             onTap: () {
               if (lastedUpdate.text.isNotEmpty) {
-                dummyData[i].allUpdates.insert(0, lastedUpdate.text);
-                dummyData[i].timeCreated.insert(0, nowTime);
+                projectsData[i].allUpdates.insert(0, lastedUpdate.text);
+                projectsData[i].timeCreated.insert(0, nowTime);
                 setState(() {});
               }
             },
             child: Icon(Icons.add)),
         title: TextField(
-          controller: lastedUpdate,
-          decoration: InputDecoration(
-              focusedBorder: OutlineInputBorder(
-                borderSide: BorderSide(color: Colors.grey[400]!, width: 2.0),
-                borderRadius: BorderRadius.circular(5.0),
+            controller: lastedUpdate,
+            decoration: myDeco(projectsData[i].allUpdates[0])),
+        subtitle: projectsData[i].timeCreated.length == 1
+            ? null
+            : Text(
+                "${projectsData[i].timeCreated[1]} · ${projectsData[i].allUpdates[1]}",
+                textDirection: TextDirection.ltr,
+                textAlign: TextAlign.right,
               ),
-              border: InputBorder.none,
-              hintStyle: TextStyle(color: Colors.black),
-              hintText: dummyData[i].allUpdates![0]),
-        ),
-        subtitle: Text(
-            "${dummyData[i].timeCreated[1]} · ${dummyData[i].allUpdates[1]}",
-          textDirection: TextDirection.ltr,
-          textAlign: TextAlign.right,
-        ),
         trailing: InkWell(onTap: () {}, child: Icon(Icons.menu)),
       ),
     );
