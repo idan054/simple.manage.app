@@ -5,57 +5,41 @@ import 'package:flutter/material.dart';
 import 'package:manage/detailsPage.dart';
 import 'package:manage/helpers.dart';
 import 'package:manage/projectData.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'dialog.dart';
 
-
 class MainPage extends StatefulWidget {
-  const MainPage({Key? key}) : super(key: key);
+  final List<ProjectData> projectsData;
+  const MainPage(this.projectsData, {Key? key}) : super(key: key);
 
   @override
   State<MainPage> createState() => _MainPageState();
 }
 
-bool useDummyData = kDebugMode && true;
 
 class _MainPageState extends State<MainPage> {
-  List<ProjectData> projectsData = useDummyData ? [
-    ProjectData(
-      projectName: "Pogo",
-      allUpdates: [
-        "עדכון פוגו ראשון",
-        "עדכון פוגו שני",
-        "עדכון פוגו שלישי",
-      ],
-      timeCreated: [
-        "עכשיו",
-        "אתמול",
-        "לפני 2 ימים",
-      ],
-    ),
-    ProjectData(
-      projectName: "AllerG",
-      allUpdates: [
-        "עדכון AllerG ראשון",
-        "עדכון AllerG שני",
-        "עדכון AllerG שלישי",
-      ],
-      timeCreated: [
-        "עכשיו",
-        "אתמול",
-        "לפני 2 ימים",
-      ],
-    ),
-  ] : [];
+  List<ProjectData> projectsData = [];
+
+  @override
+  void initState() {
+    projectsData = widget.projectsData;
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
+    List<ProjectData> projectsData = widget.projectsData;
     print('Build main page');
-
-    /*await*/ saveLocally(projectsData);
 
     return Scaffold(
       appBar: AppBar(
+        actions: [
+          InkWell(
+            onTap: () async => clearLocally(),
+            child: Icon(Icons.restart_alt),
+          )
+        ],
         title: const Text('הפרוייקטים שלי'),
         leadingWidth: 110,
         leading: TextButton(
@@ -74,11 +58,12 @@ class _MainPageState extends State<MainPage> {
                   timeCreated: [nowTime],
                 ),
               );
+              saveLocally(projectsData);
               setState(() {});
             }
           },
           child: const Text(
-            'פרוייטק חדש',
+            'פרוייקט חדש',
             style: TextStyle(color: Colors.white),
           ),
         ),
@@ -90,17 +75,20 @@ class _MainPageState extends State<MainPage> {
             return Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                SizedBox(height: 250,),
-                Text('הוסף פרוייקט חדש כדי להתחיל (:',
+                SizedBox(
+                  height: 250,
+                ),
+                Text(
+                  'הוסף פרוייקט חדש כדי להתחיל (:',
                   style: TextStyle(color: Colors.grey, fontSize: 14),
                 ),
               ],
             );
           }
 
-          print('dummyData ${projectsData[i].projectName}');
-          print('dummyData ${projectsData[i].allUpdates}');
-          print('dummyData ${projectsData[i].timeCreated}');
+          // print('dummyData ${projectsData[i].projectName}');
+          // print('dummyData ${projectsData[i].allUpdates}');
+          // print('dummyData ${projectsData[i].timeCreated}');
 
           return Column(
             children: [
@@ -122,11 +110,14 @@ class _MainPageState extends State<MainPage> {
                           children: <TextSpan>[
                             TextSpan(
                                 text: projectsData[i].timeCreated[0],
-                                style: TextStyle(fontSize: 13, color: Colors.black)),
+                                style: TextStyle(
+                                    fontSize: 13, color: Colors.black)),
                             TextSpan(
                                 text: ' · ${projectsData[i].projectName}',
                                 style: TextStyle(
-                                    fontSize: 13, color: Colors.black, fontWeight: FontWeight.bold)),
+                                    fontSize: 13,
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.bold)),
                           ],
                         ),
                       ),
@@ -157,6 +148,7 @@ class _MainPageState extends State<MainPage> {
   }
 
   Card buildCard(int i) {
+
     var lastedUpdate = TextEditingController();
     var formatTime = intl.DateFormat("(dd/MM) HH:mm");
     var nowTime = formatTime.format(DateTime.now());
@@ -164,12 +156,13 @@ class _MainPageState extends State<MainPage> {
     return Card(
       child: ListTile(
         leading: InkWell(
-            onTap: ()  {
+            onTap: () {
               if (lastedUpdate.text.isNotEmpty) {
                 projectsData[i].allUpdates.insert(0, lastedUpdate.text);
                 projectsData[i].timeCreated.insert(0, nowTime);
+                saveLocally(projectsData);
                 setState(() {});
-              } else{
+              } else {
                 mySnack(context, 'עלייך לכתוב עדכון חדש');
               }
             },
@@ -184,12 +177,13 @@ class _MainPageState extends State<MainPage> {
                 textDirection: TextDirection.ltr,
                 textAlign: TextAlign.right,
               ),
-        trailing: InkWell(onTap: () =>
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => DetailsPage(projectsData[i])),
-            )
-            , child: Icon(Icons.menu)),
+        trailing: InkWell(
+            onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => DetailsPage(projectsData[i])),
+                ),
+            child: Icon(Icons.menu)),
       ),
     );
   }

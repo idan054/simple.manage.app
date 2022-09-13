@@ -21,34 +21,31 @@ void mySnack(context, text) =>
       duration: Duration(milliseconds: 750),
     ));
 
+Future clearLocally() async {
+  var pref = await SharedPreferences.getInstance();
+  pref.clear();
+  var prefData = pref.getString('AllProjectsData');
+  print('pref: $prefData');
+}
+
+Future<List<ProjectData>> getLocally() async {
+  final prefs = await SharedPreferences.getInstance();
+  var projectsStr = prefs.getString('AllProjectsData');
+  List projectsList = jsonDecode(projectsStr ?? '[]');
+  var projectsData = projectsList.map((e) =>
+      projectDataFromJson(jsonEncode(e))).toList();
+  // print('projects Data: ${projectsData.runtimeType}');
+  // print('projects Data: $projectsData');
+  // print('--------------');
+
+  return projectsData.toList();
+}
+
 Future saveLocally(List<ProjectData> data) async {
   final prefs = await SharedPreferences.getInstance();
-  // prefs.setString('AllProjectsData', data.map((e) => e.toJson()));
-
-
-  // var itemsAsJson = data.map((e) => '${e.toJson()}');//.toList();
+  print('saveLocally() ${jsonEncode(data)}');
   prefs.setString('AllProjectsData', jsonEncode(data));
 
-  print('--------------------');
-
-  var allProjectsData = prefs.getString('AllProjectsData') ?? '';
-  print('allProjectsData ${allProjectsData}');
-  List xxx = jsonDecode(allProjectsData);
-  print('xxx ${xxx.runtimeType}');
-  print('xxx ${xxx}');
-
-  var projectsData = xxx.map((e) => projectDataFromJson(jsonEncode(e)));
-  print('projectsData data ${projectsData.runtimeType}');
-  print('projectsData data ${projectsData}');
-
-
-  // List<String> allProjectsData2 = allProjectsData.replaceAll('[', '').replaceAll(']', '').split(', ');
-  // allProjectsData2.forEach((element) {print('$element');});
-  //
-
-  // var projectsData = projectDataFromJson(allProjectsData ?? '');
-  // print('projectsData data ${projectsData.runtimeType}');
-  // print('projectsData data ${projectsData}');
 
   // var itemsAsJson = data.map((e) => e.toJson()).toList();
   // print('itemsAsJson data ${itemsAsJson.runtimeType}');

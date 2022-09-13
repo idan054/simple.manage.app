@@ -1,29 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:manage/mainPage.dart';
+import 'package:manage/projectData.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-void main() {
-  SharedPreferences.setMockInitialValues({});
+import 'helpers.dart';
 
+void main() async {
   print('START');
-  runApp(const MyApp());
+  // SharedPreferences.setMockInitialValues({'AllProjectsData' : '[{"projectName":"Pogo","timeCreated":["עכשיו","אתמול","לפני 2 ימים"],"allUpdates":["עדכון פוגו ראשון","עדכון פוגו שני","עדכון פוגו שלישי"]},{"projectName":"AllerG","timeCreated":["עכשיו","אתמול","לפני 2 ימים"],"allUpdates":["עדכון AllerG ראשון","עדכון AllerG שני","עדכון AllerG שלישי"]}]'});
+  // SharedPreferences.setMockInitialValues({});
+  List<ProjectData> projectsData = await getLocally();
+  print('getLocally() PROJECTS result: ${projectsData.length}');
+  runApp(myApp(projectsData));
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
+Widget myApp(projectsData) => MaterialApp(
       title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const Directionality(
-        textDirection: TextDirection.rtl,
-          child: MainPage()),
+      home: Directionality(
+          textDirection: TextDirection.rtl,
+          child: MainPage(projectsData)),
     );
-  }
-}
