@@ -1,20 +1,13 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
+import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart' as intl;
 import 'package:flutter/material.dart';
+import 'package:manage/detailsPage.dart';
 import 'package:manage/helpers.dart';
+import 'package:manage/projectData.dart';
 
 import 'dialog.dart';
 
-class ProjectData {
-  String projectName;
-  List<String> timeCreated = [];
-  List<String> allUpdates = [];
-
-  ProjectData(
-      {required this.projectName,
-      required this.timeCreated,
-      required this.allUpdates});
-}
 
 class MainPage extends StatefulWidget {
   const MainPage({Key? key}) : super(key: key);
@@ -23,9 +16,11 @@ class MainPage extends StatefulWidget {
   State<MainPage> createState() => _MainPageState();
 }
 
+bool useDummyData = kDebugMode && true;
+
 class _MainPageState extends State<MainPage> {
-  List<ProjectData> projectsData = [
-/*    ProjectData(
+  List<ProjectData> projectsData = useDummyData ? [
+    ProjectData(
       projectName: "Pogo",
       allUpdates: [
         "עדכון פוגו ראשון",
@@ -50,8 +45,8 @@ class _MainPageState extends State<MainPage> {
         "אתמול",
         "לפני 2 ימים",
       ],
-    ),*/
-  ];
+    ),
+  ] : [];
 
   @override
   Widget build(BuildContext context) {
@@ -187,7 +182,12 @@ class _MainPageState extends State<MainPage> {
                 textDirection: TextDirection.ltr,
                 textAlign: TextAlign.right,
               ),
-        trailing: InkWell(onTap: () {}, child: Icon(Icons.menu)),
+        trailing: InkWell(onTap: () =>
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => DetailsPage(projectsData[i])),
+            )
+            , child: Icon(Icons.menu)),
       ),
     );
   }
