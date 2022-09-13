@@ -22,16 +22,41 @@ void mySnack(context, text) =>
     ));
 
 Future saveLocally(List<ProjectData> data) async {
-  // final prefs = await SharedPreferences.getInstance();
+  final prefs = await SharedPreferences.getInstance();
   // prefs.setString('AllProjectsData', data.map((e) => e.toJson()));
 
-  var itemsAsJson = data.map((e) => e.toJson()).toList();
-  print('itemsAsJson data ${itemsAsJson.runtimeType}');
-  print('itemsAsJson data ${itemsAsJson}');
+
+  // var itemsAsJson = data.map((e) => '${e.toJson()}');//.toList();
+  prefs.setString('AllProjectsData', jsonEncode(data));
 
   print('--------------------');
 
-  var projectsData = data.map((e) => projectDataFromJson(jsonEncode(e)));
+  var allProjectsData = prefs.getString('AllProjectsData') ?? '';
+  print('allProjectsData ${allProjectsData}');
+  List xxx = jsonDecode(allProjectsData);
+  print('xxx ${xxx.runtimeType}');
+  print('xxx ${xxx}');
+
+  var projectsData = xxx.map((e) => projectDataFromJson(jsonEncode(e)));
   print('projectsData data ${projectsData.runtimeType}');
   print('projectsData data ${projectsData}');
+
+
+  // List<String> allProjectsData2 = allProjectsData.replaceAll('[', '').replaceAll(']', '').split(', ');
+  // allProjectsData2.forEach((element) {print('$element');});
+  //
+
+  // var projectsData = projectDataFromJson(allProjectsData ?? '');
+  // print('projectsData data ${projectsData.runtimeType}');
+  // print('projectsData data ${projectsData}');
+
+  // var itemsAsJson = data.map((e) => e.toJson()).toList();
+  // print('itemsAsJson data ${itemsAsJson.runtimeType}');
+  // print('itemsAsJson data ${itemsAsJson}');
+  //
+  // print('--------------------');
+  //
+  // var projectsData = data.map((e) => projectDataFromJson(jsonEncode(e)));
+  // print('projectsData data ${projectsData.runtimeType}');
+  // print('projectsData data ${projectsData}');
 }

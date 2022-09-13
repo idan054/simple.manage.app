@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:manage/mainPage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
+  SharedPreferences.setMockInitialValues({});
+
   print('START');
   runApp(const MyApp());
 }
