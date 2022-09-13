@@ -162,14 +162,16 @@ class _MainPageState extends State<MainPage> {
     return Card(
       child: ListTile(
         leading: InkWell(
-            onTap: () {
-              if (lastedUpdate.text.isNotEmpty) {
+            onTap: () async {
+              await saveLocally(projectsData);
+
+/*              if (lastedUpdate.text.isNotEmpty) {
                 projectsData[i].allUpdates.insert(0, lastedUpdate.text);
                 projectsData[i].timeCreated.insert(0, nowTime);
                 setState(() {});
               } else{
                 mySnack(context, 'עלייך לכתוב עדכון חדש');
-              }
+              }*/
             },
             child: Icon(Icons.add)),
         title: TextField(
