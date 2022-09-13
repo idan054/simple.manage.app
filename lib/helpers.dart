@@ -12,3 +12,9 @@ InputDecoration(
   hintStyle: TextStyle(color: hintColor),
   hintText: hintText
 );
+
+void mySnack(context, text)=>
+  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+    content: Text(text),
+    duration: Duration(milliseconds: 750),
+  ));

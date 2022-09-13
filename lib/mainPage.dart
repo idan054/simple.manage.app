@@ -25,7 +25,7 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   List<ProjectData> projectsData = [
-    ProjectData(
+/*    ProjectData(
       projectName: "Pogo",
       allUpdates: [
         "עדכון פוגו ראשון",
@@ -50,15 +50,17 @@ class _MainPageState extends State<MainPage> {
         "אתמול",
         "לפני 2 ימים",
       ],
-    ),
+    ),*/
   ];
 
   @override
   Widget build(BuildContext context) {
+    print('Build main page');
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('הפרוייקטים שלי'),
-        leadingWidth: 100,
+        leadingWidth: 110,
         leading: TextButton(
           style: ButtonStyle(
               backgroundColor: MaterialStateProperty.all(Colors.white12)),
@@ -85,8 +87,20 @@ class _MainPageState extends State<MainPage> {
         ),
       ),
       body: ListView.builder(
-        itemCount: projectsData.length,
+        itemCount: projectsData.isEmpty ? 1 : projectsData.length,
         itemBuilder: (context, i) {
+          if (projectsData.isEmpty) {
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SizedBox(height: 250,),
+                Text('הוסף פרוייקט חדש כדי להתחיל (:',
+                  style: TextStyle(color: Colors.grey, fontSize: 14),
+                ),
+              ],
+            );
+          }
+
           print('dummyData ${projectsData[i].projectName}');
           print('dummyData ${projectsData[i].allUpdates}');
           print('dummyData ${projectsData[i].timeCreated}');
@@ -111,11 +125,11 @@ class _MainPageState extends State<MainPage> {
                           children: <TextSpan>[
                             TextSpan(
                                 text: projectsData[i].timeCreated[0],
-                                style: TextStyle(fontSize: 13)),
+                                style: TextStyle(fontSize: 13, color: Colors.black)),
                             TextSpan(
                                 text: ' · ${projectsData[i].projectName}',
                                 style: TextStyle(
-                                    fontSize: 13, fontWeight: FontWeight.bold)),
+                                    fontSize: 13, color: Colors.black, fontWeight: FontWeight.bold)),
                           ],
                         ),
                       ),
@@ -123,7 +137,8 @@ class _MainPageState extends State<MainPage> {
                       InkWell(
                           onTap: () async {
                             bool shouldDelete = await ruSureDialog(
-                                    context, projectsData[i].projectName) ?? false;
+                                    context, projectsData[i].projectName) ??
+                                false;
                             if (shouldDelete) {
                               projectsData.remove(projectsData[i]);
                               setState(() {});
@@ -157,6 +172,8 @@ class _MainPageState extends State<MainPage> {
                 projectsData[i].allUpdates.insert(0, lastedUpdate.text);
                 projectsData[i].timeCreated.insert(0, nowTime);
                 setState(() {});
+              } else{
+                mySnack(context, 'עלייך לכתוב עדכון חדש');
               }
             },
             child: Icon(Icons.add)),
