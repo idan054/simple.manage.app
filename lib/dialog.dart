@@ -58,7 +58,7 @@ Future<bool?> ruSureDialog(context, String projectName) async {
                 TextField(
                   controller: nameController,
                   decoration: myDeco('היסטוריית פרוייקט '
-                      '$projectName' ' תמחק לתמיד.', hintColor: Colors.red[700]!),
+                      '$projectName' ' ימחק לתמיד.', hintColor: Colors.red[700]!),
                 )
               ],
             ),

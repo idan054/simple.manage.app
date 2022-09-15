@@ -12,7 +12,7 @@ InputDecoration myDeco(String hintText, {Color hintColor = Colors.black}) =>
           borderRadius: BorderRadius.circular(5.0),
         ),
         border: InputBorder.none,
-        hintStyle: TextStyle(color: hintColor),
+        hintStyle: TextStyle(color: hintColor, fontSize: 13, fontWeight: FontWeight.bold),
         hintText: hintText);
 
 void mySnack(context, text) =>

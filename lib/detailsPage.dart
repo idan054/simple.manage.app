@@ -12,28 +12,45 @@ class DetailsPage extends StatefulWidget {
 }
 
 class _DetailsPageState extends State<DetailsPage> {
+  
   @override
   Widget build(BuildContext context) {
-    return Directionality(
-      textDirection: TextDirection.rtl,
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text('היסטוריית עדכונים'
-              ' · '
-              '${widget.projectData.projectName}'),
-        ),
-        body: ListView.builder(
-          itemCount: widget.projectData.allUpdates.length,
-          itemBuilder: (context, i) {
-            var updateNote = widget.projectData.allUpdates[i];
-            var timeCreated = widget.projectData.timeCreated[i];
-            return Card(
-              child: ListTile(
-                title: Text(updateNote),
-                subtitle: Text(timeCreated),
-              ),
-            );
-          },
+    ProjectData projectData = widget.projectData;
+    
+    return WillPopScope(
+
+      onWillPop: () {
+        Navigator.pop(context, projectData); // Go back with this
+        return Future.value(false); // Instead this.
+      },
+      child: Directionality(
+        textDirection: TextDirection.rtl,
+        child: Scaffold(
+          appBar: AppBar(
+            title: Text('היסטוריית עדכונים'
+                ' · '
+                '${projectData.projectName}'),
+          ),
+          body: ListView.builder(
+            itemCount: projectData.allUpdates.length,
+            itemBuilder: (context, i) {
+              var updateNote = projectData.allUpdates[i];
+              var timeCreated = projectData.timeCreated[i];
+              return Card(
+                child: ListTile(
+                  title: Text(updateNote),
+                  subtitle: Text(timeCreated),
+                  trailing: InkWell(
+                      onTap: () {
+                        projectData.allUpdates.removeAt(i);
+                        projectData.timeCreated.removeAt(i);
+                        setState(() {});
+                      },
+                      child: const Icon(Icons.close)),
+                ),
+              );
+            },
+          ),
         ),
       ),
     );

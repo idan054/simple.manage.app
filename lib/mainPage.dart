@@ -11,12 +11,12 @@ import 'dialog.dart';
 
 class MainPage extends StatefulWidget {
   final List<ProjectData> projectsData;
+
   const MainPage(this.projectsData, {Key? key}) : super(key: key);
 
   @override
   State<MainPage> createState() => _MainPageState();
 }
-
 
 class _MainPageState extends State<MainPage> {
   List<ProjectData> projectsData = [];
@@ -29,14 +29,17 @@ class _MainPageState extends State<MainPage> {
 
   @override
   Widget build(BuildContext context) {
-    List<ProjectData> projectsData = widget.projectsData;
     print('Build main page');
+    print('projectsData ${projectsData[0].toJson()}');
 
     return Scaffold(
       appBar: AppBar(
         actions: [
           InkWell(
-            onTap: () async => clearLocally(),
+            onTap: () async {
+              var isSure = await ruSureDialog(context, "הכל");
+              if (isSure != null && isSure) clearLocally();
+            },
             child: Icon(Icons.restart_alt),
           )
         ],
@@ -91,6 +94,7 @@ class _MainPageState extends State<MainPage> {
           // print('dummyData ${projectsData[i].timeCreated}');
 
           return Column(
+            key: Key(i.toString()),
             children: [
               if (i != 0)
                 const Divider(
@@ -147,16 +151,29 @@ class _MainPageState extends State<MainPage> {
     );
   }
 
-  Card buildCard(int i) {
+  void goToDetailsPage(i) async {
+    ProjectData result = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => DetailsPage(projectsData[i])),
+    );
+    // Update project data
+    projectsData[i] = result;
+    await saveLocally(projectsData);
+    setState(() {});
+  }
 
+  Card buildCard(int i) {
     var lastedUpdate = TextEditingController();
     var formatTime = intl.DateFormat("(dd/MM) HH:mm");
     var nowTime = formatTime.format(DateTime.now());
+    var fNode = FocusNode();
 
     return Card(
       child: ListTile(
+        onTap: () => goToDetailsPage(i),
         leading: InkWell(
             onTap: () {
+              print('lastedUpdate.text: ${lastedUpdate.text}');
               if (lastedUpdate.text.isNotEmpty) {
                 projectsData[i].allUpdates.insert(0, lastedUpdate.text);
                 projectsData[i].timeCreated.insert(0, nowTime);
@@ -169,6 +186,15 @@ class _MainPageState extends State<MainPage> {
             child: Icon(Icons.add)),
         title: TextField(
             controller: lastedUpdate,
+            focusNode: fNode,
+            textInputAction: TextInputAction.newline,
+            onEditingComplete: () => fNode.unfocus(),
+            onTapOutside: (val) => fNode.unfocus(),
+            onChanged: (value) => print('lastedUpdate ${lastedUpdate.text}'),
+            style: TextStyle(
+                color: Colors.black, fontSize: 13, fontWeight: FontWeight.bold),
+            minLines: 1,
+            maxLines: 5,
             decoration: myDeco(projectsData[i].allUpdates[0])),
         subtitle: projectsData[i].timeCreated.length == 1
             ? null
@@ -177,13 +203,7 @@ class _MainPageState extends State<MainPage> {
                 textDirection: TextDirection.ltr,
                 textAlign: TextAlign.right,
               ),
-        trailing: InkWell(
-            onTap: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => DetailsPage(projectsData[i])),
-                ),
-            child: Icon(Icons.menu)),
+        trailing: Icon(Icons.menu),
       ),
     );
   }
