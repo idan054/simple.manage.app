@@ -27,16 +27,13 @@ class _MainPageState extends State<MainPage> {
     super.initState();
   }
 
-  Widget get myDivider => Divider(
-    thickness: 1,
-    color: Colors.black12,
-    indent: 15,
-    endIndent: 15);
+  Widget get myDivider =>
+      Divider(thickness: 1, color: Colors.black12, indent: 15, endIndent: 15);
 
   @override
   Widget build(BuildContext context) {
     print('Build main page');
-    print('projectsData ${projectsData[0].toJson()}');
+    // print('projectsData ${projectsData[0].toJson()}');
 
     return Directionality(
       textDirection: TextDirection.ltr,
@@ -111,6 +108,11 @@ class _MainPageState extends State<MainPage> {
               // print('dummyData ${projectsData[i].allUpdates}');
               // print('dummyData ${projectsData[i].timeCreated}');
 
+              var timeCreated = projectsData[i].timeCreated;
+              var allUpdates = projectsData[i].allUpdates;
+              String timeCreatedStr = timeCreated.isNotEmpty ? timeCreated[0] : '';
+              String allUpdatesStr = allUpdates.isNotEmpty ? allUpdates[0] : '';
+
               return Column(
                 key: Key(i.toString()),
                 children: [
@@ -126,7 +128,7 @@ class _MainPageState extends State<MainPage> {
                             text: TextSpan(
                               children: <TextSpan>[
                                 TextSpan(
-                                    text: projectsData[i].timeCreated[0],
+                                    text: timeCreatedStr,
                                     style: TextStyle(
                                         fontSize: 13, color: Colors.black)),
                                 TextSpan(
@@ -156,7 +158,7 @@ class _MainPageState extends State<MainPage> {
                               )),
                         ],
                       )),
-                  buildCard(i),
+                  buildCard(i, allUpdatesStr),
                 ],
               );
             },
@@ -177,7 +179,7 @@ class _MainPageState extends State<MainPage> {
     setState(() {});
   }
 
-  Card buildCard(int i) {
+  Card buildCard(int i, String allUpdatesStr) {
     var lastedUpdate = TextEditingController();
     var formatTime = intl.DateFormat("(dd/MM) HH:mm");
     var nowTime = formatTime.format(DateTime.now());
@@ -206,19 +208,18 @@ class _MainPageState extends State<MainPage> {
                 color: Colors.black, fontSize: 13, fontWeight: FontWeight.bold),
             minLines: 1,
             maxLines: 4,
-            decoration: myDeco(
-              projectsData[i].allUpdates[0],
+            decoration: myDeco(allUpdatesStr,
             )),
-        subtitle: projectsData[i].timeCreated.length == 1
+        subtitle: projectsData[i].allUpdates.isEmpty || projectsData[i].allUpdates.length == 1
             ? null
             : Padding(
-              padding: const EdgeInsets.only(bottom: 8.0),
-              child: Text(
+                padding: const EdgeInsets.only(bottom: 8.0),
+                child: Text(
                   "${projectsData[i].timeCreated[1]} · ${projectsData[i].allUpdates[1]}",
                   textDirection: TextDirection.rtl,
                   textAlign: TextAlign.right,
                 ),
-            ),
+              ),
         leading: Icon(Icons.subject),
         trailing: IconButton(
             constraints: BoxConstraints(),
@@ -236,7 +237,6 @@ class _MainPageState extends State<MainPage> {
               }
             },
             icon: Icon(Icons.add_circle_outline)),
-
       ),
     );
   }
