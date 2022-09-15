@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:manage/helpers.dart';
 import 'package:manage/projectData.dart';
 import 'mainPage.dart';
 
@@ -12,13 +13,11 @@ class DetailsPage extends StatefulWidget {
 }
 
 class _DetailsPageState extends State<DetailsPage> {
-  
   @override
   Widget build(BuildContext context) {
     ProjectData projectData = widget.projectData;
-    
-    return WillPopScope(
 
+    return WillPopScope(
       onWillPop: () {
         Navigator.pop(context, projectData); // Go back with this
         return Future.value(false); // Instead this.
@@ -36,18 +35,45 @@ class _DetailsPageState extends State<DetailsPage> {
             itemBuilder: (context, i) {
               var updateNote = projectData.allUpdates[i];
               var timeCreated = projectData.timeCreated[i];
-              return Card(
-                child: ListTile(
-                  title: Text(updateNote),
-                  subtitle: Text(timeCreated),
-                  trailing: InkWell(
-                      onTap: () {
-                        projectData.allUpdates.removeAt(i);
-                        projectData.timeCreated.removeAt(i);
-                        setState(() {});
-                      },
-                      child: const Icon(Icons.close)),
-                ),
+
+              var noteController = TextEditingController(text: updateNote);
+              var noteNode = FocusNode();
+              return StatefulBuilder(
+                builder: (context, stfSetState) {
+                  return Card(
+                    child: ListTile(
+                      title: TextField(
+                        focusNode: noteNode,
+                        controller: noteController,
+                        onTap: () => stfSetState(() {}),
+                        onChanged: (val) => stfSetState(() {}),
+                        style: const TextStyle(
+                            color: Colors.black, fontSize: 13, fontWeight: FontWeight.bold),
+                        minLines: 1,
+                        maxLines: 20,
+                        decoration: myDeco(''),
+                      ),
+                      subtitle: Text(timeCreated),
+                     trailing: InkWell(
+                                  onTap: () {
+                                    if (noteController.text == updateNote) {
+                                      // Delete option:
+                                      projectData.allUpdates.removeAt(i);
+                                      projectData.timeCreated.removeAt(i);
+                                      setState(() {});
+
+                                    } else {
+                                      // Edit option:
+                                      projectData.allUpdates[i] = noteController.text;
+                                      noteNode.unfocus();
+                                      setState(() {});
+                                    }
+                                  },
+                                  child: Icon(
+                                      noteController.text == updateNote ? Icons.close : Icons.task_alt))
+                    ),
+                  );
+                }
               );
             },
           ),
