@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import 'helpers.dart';
 
-Future<String?> newProjDialog(context) async {
+Future<String?> newProjDialog(context, {bool isNewProj = true}) async {
   var nameController = TextEditingController();
 
   return showDialog<String?>(
@@ -11,13 +11,15 @@ Future<String?> newProjDialog(context) async {
       return Directionality(
         textDirection: TextDirection.rtl,
         child: AlertDialog(
-          title: const Text('הוסף פרוייקט חדש', style: TextStyle(fontWeight: FontWeight.bold),),
+          title: Text(isNewProj ? 'הוסף פרוייקט חדש' : '', style: TextStyle(fontWeight: FontWeight.bold),),
           content: SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
                 TextField(
                   controller: nameController,
-                  decoration: myDeco('בחר שם לפרוייקט:', hintColor: Colors.grey),
+                  decoration: myDeco(isNewProj ?
+                        'בחר שם לפרוייקט:' : 'הדבק כאן את המידע',
+                        hintColor: Colors.grey),
                 )
               ],
             ),

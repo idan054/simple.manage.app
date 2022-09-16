@@ -14,9 +14,10 @@ InputDecoration myDeco(String hintText,
       borderRadius: BorderRadius.circular(5.0),
     ),
     border: InputBorder.none,
-    hintStyle:
+    floatingLabelBehavior: FloatingLabelBehavior.never,
+    labelStyle:
         TextStyle(color: hintColor, fontSize: 13, fontWeight: FontWeight.bold),
-    hintText: hintText,
+    labelText: hintText,
     suffix: suffix,
   );
 }
@@ -34,10 +35,10 @@ Future clearLocally() async {
   print('pref: $prefData');
 }
 
-Future<List<ProjectData>> getLocally() async {
+Future<List<ProjectData>> getLocally({String? backupData}) async {
   final prefs = await SharedPreferences.getInstance();
   var projectsStr = prefs.getString('AllProjectsData');
-  List projectsList = jsonDecode(projectsStr ?? '[]');
+  List projectsList = jsonDecode(backupData ?? projectsStr ?? '[]');
   var projectsData =
       projectsList.map((e) => projectDataFromJson(jsonEncode(e))).toList();
   // print('projects Data: ${projectsData.runtimeType}');

@@ -1,10 +1,13 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
+import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart' as intl;
 import 'package:flutter/material.dart';
 import 'package:manage/detailsPage.dart';
 import 'package:manage/helpers.dart';
 import 'package:manage/projectData.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'dialogs.dart';
@@ -19,6 +22,7 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
+  var menuValue = 'איפוס';
   List<ProjectData> projectsData = [];
 
   @override
@@ -42,12 +46,37 @@ class _MainPageState extends State<MainPage> {
           actions: [
             Padding(
               padding: const EdgeInsets.only(right: 8.0),
-              child: InkWell(
-                onTap: () async {
-                  var isSure = await ruSureDialog(context, "הכל");
-                  if (isSure != null && isSure) clearLocally();
+              child: PopupMenuButton(
+                icon: Icon(Icons.more_vert),
+                onSelected: (value) async {
+                  if (value == 'איפוס') {
+                    var isSure = await ruSureDialog(context, "הכל");
+                    if (isSure != null && isSure) clearLocally();
+                  } else if (value == 'ייצוא') {
+                    Share.share(jsonEncode(projectsData));
+                  } else if (value == 'ייבוא') {
+                    var backupValue =
+                        await newProjDialog(context, isNewProj: false);
+                    if (backupValue != null && backupValue.isNotEmpty) {
+                      projectsData = await getLocally(backupData: backupValue);
+                    }
+                  }
+                  setState(() {});
                 },
-                child: Icon(Icons.restart_alt),
+                itemBuilder: (_) => <PopupMenuItem<String>>[
+                  PopupMenuItem<String>(
+                    value: 'ייצוא',
+                    child: Text('ייצוא'),
+                  ),
+                  PopupMenuItem<String>(
+                    value: 'ייבוא',
+                    child: Text('ייבוא'),
+                  ),
+                  PopupMenuItem<String>(
+                    value: 'איפוס',
+                    child: const Text('איפוס'),
+                  ),
+                ],
               ),
             )
           ],
@@ -110,7 +139,8 @@ class _MainPageState extends State<MainPage> {
 
               var timeCreated = projectsData[i].timeCreated;
               var allUpdates = projectsData[i].allUpdates;
-              String timeCreatedStr = timeCreated.isNotEmpty ? timeCreated[0] : '';
+              String timeCreatedStr =
+                  timeCreated.isNotEmpty ? timeCreated[0] : '';
               String allUpdatesStr = allUpdates.isNotEmpty ? allUpdates[0] : '';
 
               return Column(
@@ -208,9 +238,11 @@ class _MainPageState extends State<MainPage> {
                 color: Colors.black, fontSize: 13, fontWeight: FontWeight.bold),
             minLines: 1,
             maxLines: 4,
-            decoration: myDeco(allUpdatesStr,
+            decoration: myDeco(
+              allUpdatesStr,
             )),
-        subtitle: projectsData[i].allUpdates.isEmpty || projectsData[i].allUpdates.length == 1
+        subtitle: projectsData[i].allUpdates.isEmpty ||
+                projectsData[i].allUpdates.length == 1
             ? null
             : Padding(
                 padding: const EdgeInsets.only(bottom: 8.0),

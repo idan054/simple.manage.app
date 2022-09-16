@@ -26,9 +26,15 @@ class _DetailsPageState extends State<DetailsPage> {
         textDirection: TextDirection.rtl,
         child: Scaffold(
           appBar: AppBar(
-            title: Text('היסטוריית עדכונים'
+            title: Text(
+              ' עדכונים'
                 ' · '
-                '${projectData.projectName}'),
+                '${projectData.projectName}'
+              ,
+              textDirection: TextDirection.ltr,
+              textAlign: TextAlign.right,
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+            ),
           ),
           body: ListView.builder(
             itemCount: projectData.allUpdates.length,
