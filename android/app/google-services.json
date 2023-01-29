@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "809315174438",
+    "project_id": "taski-manage-tasks-app",
+    "storage_bucket": "taski-manage-tasks-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:809315174438:android:f6258e17fc65893a157ee7",
+        "android_client_info": {
+          "package_name": "com.biton.manage.manage"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "809315174438-h50o5kmvr1lbvpmdu95i054p0rifi5h9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCgRfZzzgEm04Maxouu8foaKRVYr73T4Og"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "809315174438-h50o5kmvr1lbvpmdu95i054p0rifi5h9.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
